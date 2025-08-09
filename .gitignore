@@ -1,0 +1,17 @@
+# node & build
+node_modules
+dist
+.cache
+.tmp
+
+# editor
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
