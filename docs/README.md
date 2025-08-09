@@ -10,12 +10,13 @@ Each doc maps my mini-implementation to TanStack Query v5 concepts.
 ## Structure
 
 Each doc follows the template in `_template.md` :
-- Context 
-- Problem Statement 
+
+- Context
+- Problem Statement
 - Goals
 - Decision
 - Consequences
 
 ## Index
 
-- [**000 : Project context and goals**]()
+- [**000 : Project context and goals**](https://github.com/LeDevNovice/mini-tq/blob/master/docs/000-context-and-goals.md)

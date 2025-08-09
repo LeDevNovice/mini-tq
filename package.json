@@ -10,11 +10,32 @@
     "test": "vitest --run",
     "test:ui": "vitest",
     "typecheck": "pnpm -r --parallel run typecheck",
-    "dev": "echo \"Nothing to dev at root yet\"",
-    "verify": "pnpm typecheck && pnpm test"
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "format:write": "prettier . --write",
+    "format:check": "prettier . --check",
+    "size": "size-limit",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:write && pnpm test && pnpm size"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@size-limit/esbuild": "^11.2.0",
+    "@size-limit/file": "^11.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.0",
+    "@typescript-eslint/parser": "^8.39.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.6.2",
+    "size-limit": "^11.2.0",
     "typescript": "^5.9.2",
-    "vitest": "^2.1.9"
-  }
+    "vitest": "^3.2.4"
+  },
+  "size-limit": [
+    {
+      "name": "@mini-tq/core",
+      "path": "packages/core/src/index.ts",
+      "import": "{ __BRAND__ }",
+      "limit": "10 KB"
+    }
+  ]
 }
