@@ -1,4 +1,5 @@
 /**
+ * See docs: /docs/guide/query-key-hashing.md
  * Key hashing for query identification.
  *
  * In TanStack Query, the cache is keyed by a "query key" that is hashed in a
