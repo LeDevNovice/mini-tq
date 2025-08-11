@@ -20,7 +20,7 @@ describe('Subscribable', () => {
 
     expect(bus.listenerCount).toBe(0);
 
-    const off = bus.subscribe(() => { });
+    const off = bus.subscribe(() => {});
     expect(bus.listenerCount).toBe(1);
 
     off();

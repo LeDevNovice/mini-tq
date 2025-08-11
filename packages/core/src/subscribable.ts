@@ -1,4 +1,5 @@
 /**
+ * See docs: /docs/guide/subscribable.md
  * Subscribable : minimal notification primitive.
  * A tiny framework-agnostic observable that other core entities can extend.
  *
@@ -38,13 +39,13 @@ export class Subscribable<T = void> {
    * Protected hook invoked when a new listener is added.
    * Subclasses can override this to initiate work on first subscriber.
    */
-  protected onSubscribe(): void { }
+  protected onSubscribe(): void {}
 
   /**
    * Protected hook invoked when a listener is removed.
    * Subclasses can override this to tear down work when the last subscriber leaves.
    */
-  protected onUnsubscribe(): void { }
+  protected onUnsubscribe(): void {}
 
   /**
    * Protected hook invoked when a subscriber threw during flush.

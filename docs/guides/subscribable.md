@@ -1,7 +1,8 @@
 # Subscribable & Notification Flow
-## Scope 
 
-*This guide explains what a Subscribable is, why we use it and how it behaves in TanStack Query v5. It’s written to support reading the code.*
+## Scope
+
+_This guide explains what a Subscribable is, why we use it and how it behaves in TanStack Query v5. It’s written to support reading the code._
 
 Subscribable is a basic observation building block (a mini observable and event-emitter) in the core of TanStack Query. It doesn't know anything about React or the DOM. It just manages a list of listeners, subscription and unsubscription, and exposes lifecycle hooks (onSubscribe and onUnsubscribe).
 

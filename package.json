@@ -34,7 +34,6 @@
     {
       "name": "@mini-tq/core",
       "path": "packages/core/src/index.ts",
-      "import": "{ __BRAND__ }",
       "limit": "10 KB"
     }
   ]
