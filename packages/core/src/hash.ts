@@ -22,7 +22,6 @@ function isTypedArray(value: unknown): value is ArrayBufferView & { length: numb
 }
 
 function ownKeysSorted(obj: Record<string | symbol, unknown>): (string | symbol)[] {
-  // Include symbol keys for completeness; order: string keys (sorted) then symbol keys (sorted by description)
   const stringKeys = Object.keys(obj).sort();
   const symbolKeys = Object.getOwnPropertySymbols(obj).sort((a, b) => {
     const da = a.description ?? '';
@@ -31,19 +30,14 @@ function ownKeysSorted(obj: Record<string | symbol, unknown>): (string | symbol)
   });
   return [...stringKeys, ...symbolKeys];
 }
-
-// ————————————————————————————————————————————————————————————————————————————
-// stableStringify
-// ————————————————————————————————————————————————————————————————————————————
-
 /**
  * Produce a canonical string for a value.
  *
- * Rules:
- *  - Arrays: order matters (`[a,b] !== [b,a]`), elements stringified in order.
- *  - Objects: key order does **not** matter; keys are sorted; includes `undefined` explicitly.
- *  - Primitive tags to avoid collisions (`str:`, `num:`, etc.).
- *  - Date, RegExp, BigInt, Symbol, Function, Map, Set, TypedArray: tagged forms.
+ * Rules :
+ *  - Arrays: order matters ([a,b] !== [b,a]), elements stringified in order.
+ *  - Objects: key order does  matter. Keys are sorted; includes undefined explicitly.
+ *  - Primitive tags to avoid collisions (`str:`, `num:`, etc...).
+ *  - Date, RegExp, BigInt, Symbol, Function, Map, Set, TypedArray : tagged forms.
  *  - Circular references: throws a TypeError (query keys should not be circular).
  */
 export function stableStringify(value: unknown, seen = new Set<unknown>()): string {
@@ -59,7 +53,6 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
   if (t === 'undefined') return 'undef';
   if (t === 'symbol') return `sym:${(value as symbol).description ?? ''}`;
   if (t === 'function') {
-    // Functions are not recommended in query keys; we serialize the name to reduce collisions.
     const name = (value as Function).name || 'anonymous';
     return `fn:${name}`;
   }
@@ -75,7 +68,7 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
     return `regexp:${value.toString()}`;
   }
 
-  // Typed arrays (e.g., Uint8Array)
+  // Typed arrays
   if (isTypedArray(value)) {
     const ctor = (value as { constructor?: { name?: string } })?.constructor?.name ?? 'TypedArray';
     const arr = Array.from(value as unknown as ArrayLike<number>);
@@ -95,7 +88,6 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
   if (value instanceof Map) {
     if (seen.has(value)) throw new TypeError('stableStringify: circular Map reference');
     seen.add(value);
-    // sort by key stringification to remain stable
     const entries = Array.from(value.entries())
       .map(([k, v]) => [stableStringify(k, seen), stableStringify(v, seen)] as const)
       .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
@@ -107,7 +99,7 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
 
   // Set
   if (value instanceof Set) {
-    if (seen.has(value)) throw new TypeError('stableStringify: circular Set reference');
+    if (seen.has(value)) throw new TypeError('stableStringify : circular Set reference');
     seen.add(value);
     const items = Array.from(value.values())
       .map((v) => stableStringify(v, seen))
@@ -119,13 +111,12 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
 
   // Plain object
   if (isPlainObject(value)) {
-    if (seen.has(value)) throw new TypeError('stableStringify: circular object reference');
+    if (seen.has(value)) throw new TypeError('stableStringify : circular object reference');
     seen.add(value);
     const pairs: string[] = [];
     for (const k of ownKeysSorted(value as Record<string | symbol, unknown>)) {
       const keyLabel =
         typeof k === 'string' ? `key:${JSON.stringify(k)}` : `keysym:${k.description ?? ''}`;
-      // We intentionally include undefined to distinguish {a:undefined} from {}
       const v = (value as Record<string | symbol, unknown>)[k];
       const entry = `${keyLabel}=>${stableStringify(v, seen)}`;
       pairs.push(entry);
@@ -135,22 +126,18 @@ export function stableStringify(value: unknown, seen = new Set<unknown>()): stri
   }
 
   // Fallback for exotic objects
-  const tag = Object.prototype.toString.call(value); // e.g. [object WeakMap]
+  const tag = Object.prototype.toString.call(value);
   return `obj:${tag}`;
 }
-
-// ————————————————————————————————————————————————————————————————————————————
-// hashQueryKey
-// ————————————————————————————————————————————————————————————————————————————
 
 /**
  * Compute the canonical hash for a QueryKey.
  *
- * We serialize the key with stableStringify and prefix with "qk:" to avoid
+ * I serialize the key with stableStringify and prefix with "qk:" to avoid
  * accidental collisions with raw strings.
  *
  * Examples:
- *  - ['todos', 1] → qk:["str:\"todos\"",num:1]
+ *  - ['todos', 1] → qk : ["str:\"todos\"",num:1]
  *  - {a:1, b:2} vs {b:2, a:1} → same hash
  *  - ['todos'] vs 'todos' → different hashes
  */
